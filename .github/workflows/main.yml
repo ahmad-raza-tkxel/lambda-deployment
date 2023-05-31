@@ -12,10 +12,10 @@ jobs:
             - name: checkout repo content
               uses: actions/checkout@v3
 
-            - name: setup python 3.8
+            - name: setup python 3.10
               uses: actions/setup-python@v3
               with:
-                python-version: "3.8"
+                python-version: "3.10"
             
             - name: Configure AWS Credentials
               uses: aws-actions/configure-aws-credentials@v2
@@ -26,5 +26,10 @@ jobs:
 
             - name: deploy lambda code
               run: |
-                zip -r package.zip lambda_function.py
-                aws lambda update-function-code --function-name=handler --zip-file=fileb://package.zip
+                python -m pip install --upgrade pip
+                pip install --target ./package -r requirements.txt
+                cd package/
+                zip -r ../package.zip .
+                cd ..
+                zip package.zip lambda_function.py
+                aws lambda update-function-code --function-name=lambda-function-py --zip-file=fileb://package.zip
